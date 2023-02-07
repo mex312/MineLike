@@ -38,6 +38,35 @@ void Game::Chunk::setCreatedBlock(Block* block, const Core::uvec3 pos)
 	blocks[(pos.x << 8) + (pos.y << 4) + pos.z] = block;
 }
 
+void Game::Chunk::updateModels()
+{
+	for (auto p : modelsToUpdate)
+	{
+		ModelHolder* holder = &models[p.first];
+		holder->model->texture = p.first;
+		holder->model->polys.clear();
+	}
+
+	for (int i = 0; i < 4096; i++)
+	{
+		if (blocks[i] != NULL) {
+			Model mod = blocks[i]->getModel();
+
+			if (modelsToUpdate[mod.texture])
+			{
+				for (auto p : models[mod.texture].model->polys)
+					for (auto v : p.verts)
+						v.pos += uvec3(i >> 8, (i >> 4) & 15, i & 15);
+
+				*models[mod.texture].model += mod;
+			}
+		}
+	}
+
+	needModelUpdate = false;
+	modelsToUpdate.clear();
+}
+
 Block* Game::Chunk::getBlock(const Core::uvec3& blockPos)
 {
 	bool good = true;
@@ -85,6 +114,9 @@ Block* Game::Chunk::setBlock(const Core::uvec3& blockPos, const id& blockId)
 
 	setCreatedBlock(block, blockPos);
 
+	needModelUpdate = true;
+	modelsToUpdate[block->getModel().texture] = true;
+
 	return block;
 }
 
@@ -108,12 +140,13 @@ void Game::Chunk::updateBlocksAround(const Core::uvec3& centerBlockPos)
 	}
 }
 
-Model* Game::Chunk::getModel(Core::Texture* texture)
+ModelHolder* Game::Chunk::getModelHolder(Core::Texture* texture)
 {
-	Model* out = &models[texture];
-	out->texture = texture;
+	if (needModelUpdate) updateModels();
 
-	out->polys.clear();
+	ModelHolder* out = &models[texture];
+
+	out->model->polys.clear();
 	for (int i = 0; i < 4096; i++)
 	{
 		if (blocks[i] != NULL)
@@ -122,7 +155,7 @@ Model* Game::Chunk::getModel(Core::Texture* texture)
 			{
 				for (auto& v : p.verts)
 					v.pos += Core::uvec3(i >> 8, (i >> 4) & 15, i & 15);
-				*out += p;
+				*out->model += p;
 			}
 		}
 	}

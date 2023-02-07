@@ -61,6 +61,7 @@ namespace Core
 		u32 getVBO() const { return VBO; }
 
 		ModelHolder(Model* model);
+		ModelHolder();
 
 		~ModelHolder();
 	};

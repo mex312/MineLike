@@ -183,12 +183,12 @@ int main() {
 
 		camera.position += (deltaPos * (f32)Time::deltaTime() * 2.0f) * camera.rotation;
 
-		Model* chunkModel = chunk.getModel(getBaseTexture());
+		//Model* chunkModel = chunk.getModelHolder(getBaseTexture());
 
-		ModelHolder holder(chunkModel);
-		holder.update();
+		//ModelHolder holder(chunkModel);
+		//holder.update();
 
-		context.drawModel(holder, glm::translate(glm::mat4(1), fvec3(0, 0, 0)), shader);
+		context.drawModel(*chunk.getModelHolder(getBaseTexture()), glm::translate(glm::mat4(1), fvec3(0, 0, 0)), shader);
 
 		glfwSwapBuffers(getMainWindow());
 	}

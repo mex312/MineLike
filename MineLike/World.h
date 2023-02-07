@@ -65,13 +65,17 @@ namespace Game
 		Chunk* sides[6];
 		Block* blocks[4096];
 
-		std::map<Core::Texture*, Core::Model> models = std::map<Core::Texture*, Core::Model>();
+		std::map<Core::Texture*, Core::ModelHolder> models = std::map<Core::Texture*, Core::ModelHolder>();
+		std::map<Core::Texture*, bool> modelsToUpdate = std::map<Core::Texture*, bool>();
+		bool needModelUpdate = true;
 
 		Core::uvec3 position;
 
 		Block* getBlockUnsafe(const Core::uvec3 pos);
 
 		void setCreatedBlock(Block* block, const Core::uvec3 pos);
+
+		void updateModels();
 
 	public:
 		Block* getBlock(const Core::uvec3& blockPos);
@@ -83,7 +87,7 @@ namespace Game
 
 		void updateBlocksAround(const Core::uvec3& centerBlockPos);
 
-		Core::Model* getModel(Core::Texture* texture);
+		Core::ModelHolder* getModelHolder(Core::Texture* texture);
 
 		Chunk();
 	};

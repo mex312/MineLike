@@ -10,9 +10,28 @@ Model Model::operator+(const polygon& poly)
 	return out;
 }
 
+Model Core::Model::operator+(const Model& other)
+{
+	Model out(*this);
+	for (auto p : other.polys)
+	{
+		out += p;
+	}
+	return out;
+}
+
 Model& Core::Model::operator+=(const polygon& poly)
 {
 	polys.push_back(poly);
+	return *this;
+}
+
+Model& Core::Model::operator+=(const Model& other)
+{
+	for (auto p : other.polys)
+	{
+		*this += p;
+	}
 	return *this;
 }
 

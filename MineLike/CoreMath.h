@@ -90,8 +90,10 @@ namespace Core
 		Texture* texture = NULL;
 
 		Model operator+(const polygon& poly);
+		Model operator+(const Model& other);
 
 		Model& operator+=(const polygon& poly);
+		Model& operator+=(const Model& other);
 
 		static Model LoadFromFile(const char* pathToModel);
 
